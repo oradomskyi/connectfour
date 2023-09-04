@@ -1,8 +1,8 @@
 import unittest
-
-from ..Game.Game import Game
-from ..Game.Player.PlayerHuman import PlayerHuman
-from ..Game.Player.PlayerAlgoRandom import PlayerAlgoRandom
+print(__package__, __name__)
+from ..Game import Game
+from ..Player.PlayerHuman import PlayerHuman
+from ..Player.PlayerAlgoRandom import PlayerAlgoRandom
 
 
 class TestGame(unittest.TestCase):
@@ -30,31 +30,33 @@ class TestGame(unittest.TestCase):
             )
         ]
 
-        self.width_default = 7
-        self.height_default = 6
-        self.line_length_default = 4
-        self.boring_default = True
+        self.board_width = 7
+        self.board_height = 6
+        self.board_line_length = 4
+        self.game_boring = True
 
         self.board_players_algo = [
-            PlayerAlgoRandom(n_moves=self.width_default) for i in range(0, 40)
+            PlayerAlgoRandom(n_moves=self.board_width) for i in range(0, 40)
         ]
 
-        self.settings_default = {
+        self.settings = {
             "players": self.board_players_human,
             "board": {
-                "width": self.width_default,
-                "height": self.height_default,
-                "line_length": self.line_length
+                "width": self.board_width,
+                "height": self.board_height,
+                "line_length": self.board_line_length
             },
-            "boring": True
+            "boring": self.game_boring
         }
 
     def test_ctor_correct_args(self):
-        """Test the constructor.
+        """Test the constructor with correct input args.
         """
-        self.board = Game(self.settings_default)
-        pass
-    
+        game = Game(self.settings)
+        self.assertEqual(game.board.width, self.board_width)
+        self.assertEqual(game.board.height, self.board_height)
+        self.assertTrue(all(isinstance(player, PlayerHuman) for player in game.players))
+
     def tearDown(self):
         """
         """
