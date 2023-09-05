@@ -43,36 +43,37 @@ class Board:
         """
 
         # https://en.wikipedia.org/wiki/Geometric_Shapes_(Unicode_block)
-        self.n_symbols = 42
-        self.symbols_start = ord("\u25b0")
-        self.symbols = [
+        self.n_symbols: int = 42
+        self.symbols_start: int = ord("\u25b0")
+        self.symbols: list[str] = [
             chr(self.symbols_start + i) for i in range(0, self.n_symbols)
         ]
 
         print("\n\nBoard says:\nI have", self.n_symbols,
               "symbols:", self.symbols)
 
-        self.i_symbol = 0
-        self.empty_symbol = ' '
-        self.solved = False
-        self.empty_cells_left = width*height
+        self.i_symbol: int = 0
+        self.empty_symbol: str = ' '
+        self.solved: bool = False
+        self.empty_cells_left: int = width*height
+        self.player_moves: list[int] = []  # this would keep moves - their IDs
 
         # Let's dive into initializaton...
         if 0 < width:
-            self.width = width
+            self.width: int = width
         else:
             raise ValueError(
                 "I am not sure how play on a Board of width", width)
 
         if 0 < height:
-            self.height = height
+            self.height: int = height
         else:
             raise ValueError(
                 "I am not sure how play on a Board of height", height)
 
         if 0 < line_length:
             if line_length <= self.width and line_length <= self.height:
-                self.line_length = line_length
+                self.line_length: int = line_length
             else:
                 raise ValueError("Line sould be no longer than board ",
                                  "width of ", self.width,
@@ -83,14 +84,14 @@ class Board:
                 "Line length should be greater than zero and not", line_length)
 
         # Create a matrix for storing state of the game
-        self.board = [
+        self.board: list[list[str]] = [
             [
                 self.empty_symbol for i in range(0, self.width)
             ] for j in range(0, self.height)
         ]
 
         # Create indexing for the columns
-        self.columns_height = [0 for i in range(0, self.width)]
+        self.columns_height: list[int] = [0 for i in range(0, self.width)]
 
     def __str__(self) -> str:
         """Serialize the board matrix.
@@ -106,7 +107,7 @@ class Board:
             None
         """
 
-        text = "\n\n"
+        text: str = "\n\n"
 
         # DEC column indices do not fit when there are more than 10 columns
         # HEX when there amore than 16...
@@ -306,9 +307,9 @@ class Board:
         # but still - multiple cells would be evalated multiple times.
 
         # Get the last move location and symbol
-        i = self.height - self.columns_height[column]
-        j = column
-        symbol = self.board[i][j]
+        i: int = self.height - self.columns_height[column]
+        j: int = column
+        symbol: str = self.board[i][j]
 
         '''
         # this may help other player to pay attention, which is not ideal...
@@ -335,9 +336,9 @@ class Board:
             score_up += 1
             i_cell -= 1
         '''
-        score_up = 0
+        score_up: int = 0
 
-        score_down = -1
+        score_down: int = -1
         i_cell = i
         j_cell = j
         while ((not self._limit_bottom(i, j, i_cell, j_cell)) and
@@ -345,7 +346,7 @@ class Board:
             score_down += 1
             i_cell += 1
 
-        score_vertical = score_up + score_down + 1
+        score_vertical: int = score_up + score_down + 1
 
         # -- Now let's do the same horizontaly
         score_left = -1  # not 0 because current cell will be counted
@@ -356,7 +357,7 @@ class Board:
             score_left += 1
             j_cell -= 1
 
-        score_right = -1
+        score_right: int = -1
         i_cell = i
         j_cell = j
         while ((not self._limit_right(i, j, i_cell, j_cell)) and
@@ -364,7 +365,7 @@ class Board:
             score_right += 1
             j_cell += 1
 
-        score_horizontal = score_left + score_right + 1
+        score_horizontal: int = score_left + score_right + 1
 
         # -- Main diagonal, from top left to bottom right
         score_top_left = -1  # not 0 because current cell will be counted
@@ -377,7 +378,7 @@ class Board:
             i_cell -= 1
             j_cell -= 1
 
-        score_bottom_right = -1
+        score_bottom_right: int = -1
         i_cell = i
         j_cell = j
         while ((not self._limit_bottom(i, j, i_cell, j_cell)) and
@@ -387,10 +388,10 @@ class Board:
             i_cell += 1
             j_cell += 1
 
-        score_diagonal_main = score_top_left + score_bottom_right + 1
+        score_diagonal_main: int = score_top_left + score_bottom_right + 1
 
         # -- Secondary diagonal, from top right to botom left
-        score_top_right = -1  # not 0 because current cell will be counted
+        score_top_right: int = -1  # not 0 because current cell will be counted
         i_cell = i
         j_cell = j
         while ((not self._limit_top(i, j, i_cell, j_cell)) and
@@ -400,7 +401,7 @@ class Board:
             i_cell -= 1
             j_cell += 1
 
-        score_bottom_left = -1
+        score_bottom_left: int = -1
         i_cell = i
         j_cell = j
         while ((not self._limit_bottom(i, j, i_cell, j_cell)) and
@@ -410,9 +411,9 @@ class Board:
             i_cell += 1
             j_cell -= 1
 
-        score_diagonal_secondary = score_top_right + score_bottom_left + 1
+        score_diagonal_secondary: int = score_top_right + score_bottom_left + 1
 
-        scores = {
+        scores: dict = {
             "Vertical": score_vertical,
             "Horizontal": score_horizontal,
             "Diagonal Main": score_diagonal_main,
@@ -444,6 +445,20 @@ class Board:
             None
         """
         return self.solved
+
+    def get_player_moves(self) -> list[int]:
+        """Get the list of player IDs on order of moves.
+
+        Args:
+            None
+
+        Returns:
+            player_moves: list[int] of player IDs in the order of moves
+
+        Raises:
+            None
+        """
+        return self.player_moves
 
     def _put(self, column: int, i_symbol: int) -> bool:
         """Place a stone on a board.
@@ -504,8 +519,7 @@ class Board:
         if not self._put(column, player_id):
             return False
         else:
-            # we can continue and check if player won the game
-            pass
+            self.player_moves.append(player_id)
 
         is_playable = self._check(column)
 

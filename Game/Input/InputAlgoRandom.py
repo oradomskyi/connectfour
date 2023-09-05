@@ -1,9 +1,9 @@
 from random import randint
 
-from .InputInterface import InputInterface
+from .Input import Input
 
 
-class InputAlgoRandom(InputInterface):
+class InputAlgoRandom(Input):
     """Implement generating random an integer."""
 
     def __init__(self, n: int):

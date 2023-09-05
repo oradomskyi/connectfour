@@ -134,7 +134,7 @@ class Game:
 
         # at this point things seem to be somewhat correct to try
         # instantiation of the Board class
-        self.board = Board(
+        self.board: Board = Board(
             settings["board"]["width"],
             settings["board"]["height"],
             settings["board"]["line_length"]
@@ -149,7 +149,7 @@ class Game:
                 'List of players is not specified in the settings dict:',
                 settings)
 
-        self.players = None
+        self.players: Optional[list[Player]] = None
 
         if not isinstance(settings["players"], list):
             raise TypeError(
@@ -177,7 +177,7 @@ class Game:
             self.players.append(player)
 
         # Set a flag if game is single-threaded or multi-threaded
-        self.boring = True
+        self.boring: bool = True
         if "boring" in settings:
             self.boring = settings["boring"]
 

@@ -4,7 +4,7 @@ from random import choice, randint
 from string import ascii_lowercase
 
 from ..Board.Board import Board
-
+from ..Input.Input import Input
 
 class Player:
     """Implement functions common for PlayerHuman and PlayerAlgoRandom.
@@ -36,7 +36,7 @@ class Player:
     def __init__(self,
                  name: Optional[str] = None,
                  phrases: Optional[list[str]] = None,
-                 _input=None):
+                 _input: Optional[Input] = None):
         """Initialize an instance of a Player base class.
 
         Args:
@@ -51,10 +51,10 @@ class Player:
             None
         """
         self.input = _input
-        self.symbol = None
-        self.phrases = phrases
-        self.ID = -1
-        self.n_moves_performed = 0
+        self.symbol: Optional[str] = None
+        self.phrases: Optional[list[str]] = phrases
+        self.ID: int = -1
+        self.n_moves_performed: int = 0
 
         if name is None:
             self.name = self._generate_random_name()
@@ -76,7 +76,7 @@ class Player:
         Raises:
             ConnectionError: If no available port is found.
         """
-        about = "\nPlayer " + self.name
+        about: str = "\nPlayer " + self.name
 
         if self.ID is not None:
             about += " #" + str(self.ID) + " "
@@ -97,9 +97,9 @@ class Player:
         Raises:
             None
         """
-        name_length = randint(1, 10)
-        letters = ascii_lowercase
-        name = ''.join(choice(letters) for i in range(name_length))
+        name_length: int = randint(1, 10)
+        letters: str = ascii_lowercase
+        name: str = ''.join(choice(letters) for i in range(name_length))
         return name
 
     def set_ID(self, _id: int):
@@ -171,7 +171,7 @@ class Player:
             None
         """
         # Attempt to get player input
-        column = self.input.get_int()
+        column: int = self.input.get_int()
 
         # Attempt to place a stone
         try:

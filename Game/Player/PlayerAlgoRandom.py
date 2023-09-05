@@ -14,6 +14,7 @@ class PlayerAlgoRandom(Player):
     Args:
         n_moves: number of possible moves from range {0 .. n_moves}.
         name: string name of a player
+        max_sleep: maximum sleep delay in milliseconds
 
     Attributes:
         Inherited from Player
@@ -22,7 +23,10 @@ class PlayerAlgoRandom(Player):
         Inherited from Player
     """
 
-    def __init__(self, n_moves: int, name: Optional[str] = None):
+    def __init__(self,
+                 n_moves: int,
+                 name: Optional[str] = None,
+                 max_sleep: int = 1000):
         """Initialize the random 'compiuter' player.
 
         Args:
@@ -41,6 +45,8 @@ class PlayerAlgoRandom(Player):
             _input=InputAlgoRandom(n_moves)
         )
 
+        self.max_sleep = max_sleep
+
     def move(self, board: Board):
         """Place the stone
 
@@ -54,5 +60,5 @@ class PlayerAlgoRandom(Player):
             ConnectionError: If no available port is found.
         """
         # some delay of 0 to 1000ms to make algo feel like 'making a decision'
-        sleep(randint(0, 100) / 100)
+        sleep(randint(0, self.max_sleep) / 1000)
         super().move(board)
