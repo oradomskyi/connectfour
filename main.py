@@ -15,7 +15,7 @@ from Game.Player.PlayerAlgoRandom import PlayerAlgoRandom
 
 
 In fact, current implementation allows for asynchronous M,n,k Game
-with restriction on k to be not more than 42
+with restriction on number of players to be not more than 42
 https://en.wikipedia.org/wiki/M,n,k-game
 
 For more info on async read the Game class docs

@@ -57,7 +57,7 @@ class Game:
     (read more in the comments of play() function)
 
     In fact, current implementation allows for M,n,k Game with
-    restriction on k to be not more than 42
+    restriction on number of player to be not more than 42
     https://en.wikipedia.org/wiki/M,n,k-game
     """
 

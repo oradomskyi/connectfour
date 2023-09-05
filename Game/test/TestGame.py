@@ -1,5 +1,5 @@
 import unittest
-print(__package__, __name__)
+
 from ..Game import Game
 from ..Player.PlayerHuman import PlayerHuman
 from ..Player.PlayerAlgoRandom import PlayerAlgoRandom
