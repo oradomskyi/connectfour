@@ -172,7 +172,7 @@ class Game:
                 self.players = []
 
             # Pick a symbol(color) for each player
-            player.set_ID(self.board.next_player_id())
+            player.set_ID(self.board.next_unused_stone())
 
             self.players.append(player)
 
@@ -219,11 +219,19 @@ class Game:
 
             print(self.board)
 
-            while not self.board.is_solved():
+            can_play = True
+            while can_play:
                 for player in self.players:
+                    if self.board.is_solved():
+                        can_play = False
+                        # exit the for loop
+                        break
+
+                    # game is not finished yet and this Player can play
                     print(player, self.board.get_symbol(player.get_ID()))
                     player.move(self.board)
                     print(self.board)
+
         else:
             msg = ("\n\nYa-pa-yeee! Async - this is " +
                    "where the real fun begins! XDDD\n\n")
@@ -248,7 +256,8 @@ class Game:
 
             # Decorator for the player.move()
             def move_async(board: Board, player: Player, lock: Lock):
-                """Put player.move() inside the while loop polling on lock.acquire()."""
+                """Put player.move() inside the while loop
+                polling on lock.acquire()."""
                 # Intoruce Luck and make board available to Players
                 # by chance...
                 max_delay_ms = 1000
@@ -257,7 +266,7 @@ class Game:
 
                 can_play = True
                 while can_play:
-                    # Generate random delay time in seconds 
+                    # Generate random delay time in seconds
                     delay = randint(0, max_delay_ms)/1000
 
                     # wait before trying to acquire lock
@@ -270,11 +279,11 @@ class Game:
                         # check if game already won by somebody else
                         if board.is_solved():
                             can_play = False
-                            lock.release() # don't forget to release the lock!
+                            lock.release()  # don't forget to release the lock!
 
-                            # just continue to exit the while loop
-                            # we could directly return and jump away from function
-                            # but that does not seem right as there could be other
+                            # just continue to exit the while loop. We could
+                            # directly return and jump away from function but
+                            # that does not seem right as there could be other
                             # statements after the while loop
                             continue
 
@@ -283,39 +292,54 @@ class Game:
                         player.move(board)
                         print(board)
 
-                        lock.release() # don't forget to release the lock!
+                        lock.release()  # don't forget to release the lock!
                     else:
                         # keep polling on lock.acquire()
                         pass
-                
-                print("Player", player.get_name(), " exit")
-                # here could be some more code to execute after exiting the while loop,
-                # some other logic or the cleanup procedures
 
-            # Lock is the synchronization object to ensure no players modify the Board simultaneously,
-            # as well as no players can move after board is solved or no moves left
+                print("Player", player.get_name(), " exit")
+                # here could be some more code to execute after
+                # exiting the while loop, some other logic
+                # or the cleanup procedures
+
+            # Lock is the synchronization object to ensure no players
+            # modify the Board simultaneously, as well as no players
+            # can move after board is solved or no moves left
             #
             # We can keep this object in the local scope of this if-else,
-            # as our decorator function has access to everything 
-            # in the current scope - we don't need to pass it inside the function.
-            # 
-            # but I feel this somewhat obscures usage of objects when relying on user's
-            # understanding of scopes, so I will pass lock explicitly as a parameter 
-            # to make it clear what is being used and where.
+            # as our decorator function has access to everything
+            # in the current scope - we don't need to pass it
+            # inside the function.
             #
-            # And I have no problems with this lock object is mutable and would be passed by reference,
-            # so all threads would use the same object no matter what.
+            # but I feel this somewhat obscures usage of objects when
+            # relying on user's understanding of scopes, so I will pass
+            # lock explicitly as a parameter to make it clear what is being
+            # used and where.
+            #
+            # And I have no problems with this lock object is mutable
+            # and would be passed by reference, so all threads would use
+            # the same object no matter what.
             lock = Lock()
 
             # Get the show on the road!
             for player in self.players:
-                # create a dedicated Thread for a Player with entry at move_async() function we created earlier
+                # create a dedicated Thread for a Player with entry
+                # at move_async() function we created earlier
                 # and pass there board, player, and lock objects
-                t = Thread(target=move_async, kwargs={'board': self.board, 'player': player, 'lock': lock})
+                t = Thread(
+                    target=move_async,
+                    kwargs={
+                        'board': self.board,
+                        'player': player,
+                        'lock': lock
+                    }
+                )
 
                 # Start the thread
                 t.start()
 
-                # we do not want to join() as it will cause blocking on the main thread until this one finishes
-                # and we do not need to setDaemon() because we do not want, do not need, and do not care 
-                # for any thread to continue after game is done!
+                # we do not want to join() as it will cause blocking
+                # on the main thread until this one finishes
+                # and we do not need to setDaemon() because we do not
+                # want, do not need, and do not care for any thread
+                # to continue after game is done!

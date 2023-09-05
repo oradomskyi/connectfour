@@ -30,8 +30,8 @@ board_line_length = 4
 # Create a list with two "human" players and set their names
 #
 # From a design point of view, Players could be instantiated later,
-# but that would severely limit ability to customize the instances without 
-# code duplication
+# but that would severely limit ability to customize the instances
+# without code duplication
 
 # list of Player istances
 board_players = [
@@ -53,10 +53,10 @@ board_players = [
 ]
 
 # add some more "computer" players - algo that makes random moves
-#for i in range(0, 40):
-#    board_players.append(PlayerAlgoRandom(n_moves=board_width))
+# for i in range(0, 40):
+#     board_players.append(PlayerAlgoRandom(n_moves=board_width))
 
-# A dictionary describing the game settings 
+# A dictionary describing the game settings
 settings = {
     "players": board_players,
     "board": {
@@ -66,13 +66,14 @@ settings = {
     },
     # when True players move one after the other in order of
     # the settings["players"] list
-    # when False each player run in a separate Thread and is trying 
-    # to acquire Lock() after a random delay of a few seconds
+    # when False each player run in a separate Thread
+    # and trying to acquire Lock() after a random delay
+    # of the few seconds
     "boring": True
 }
 
 if __name__ == "__main__":
-    # Begin the play only when this file is run from console, 
+    # Begin the play only when this file is run from console,
     # othervise variables are loaded into runtime when file
     # is included as module or called from another script
     Game(settings).play()

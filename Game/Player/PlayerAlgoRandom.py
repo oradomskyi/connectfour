@@ -9,7 +9,18 @@ from ..Board.Board import Board
 
 
 class PlayerAlgoRandom(Player):
-    """Implement a 'computer' player making random moves."""
+    """Implement a 'computer' player making random moves.
+
+    Args:
+        n_moves: number of possible moves from range {0 .. n_moves}.
+        name: string name of a player
+
+    Attributes:
+        Inherited from Player
+
+    Methods:
+        Inherited from Player
+    """
 
     def __init__(self, n_moves: int, name: Optional[str] = None):
         """Initialize the random 'compiuter' player.

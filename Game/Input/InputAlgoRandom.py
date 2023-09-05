@@ -19,7 +19,8 @@ class InputAlgoRandom(InputInterface):
         Raises:
             None
         """
-        # -1 is necessary because board width, but trated as index in 0-indexed list
+        # -1 is necessary because board width,
+        # but trated as index in 0-indexed list
         self.n = n-1
 
     def get_int(self) -> int:

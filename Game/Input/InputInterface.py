@@ -13,7 +13,7 @@ class InputInterface:
             int: integer input value
 
         Raises:
-            NotImplementedError: In case users did not proved implementation 
+            NotImplementedError: In case users did not proved implementation
                                  and calling the base class method
         """
         raise NotImplementedError

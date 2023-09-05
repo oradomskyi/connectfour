@@ -9,13 +9,19 @@ from ..Board.Board import Board
 class Player:
     """Implement functions common for PlayerHuman and PlayerAlgoRandom.
 
-    Attributes:
+    Args:
+        name: String containing player's name.
+        phrases: List[str] of what could be printed when player moves.
         _input: Interface to obtain user's input.
+
+    Attributes:
+        input: Interface to obtain user's input.
         symbol: A unique character representing 'stone color'.
         phrases: List[str] of what could be printed when player moves.
         ID: Unique int value from 0 to 41 that determines 'color'
             of the 'stone'.
-        name: String containing player's name
+        name: String containing player's name.
+        n_moves_performed: integer number of steps taken during the game.
 
     Methods:
         move(board): To set a stone on a board.
@@ -34,18 +40,21 @@ class Player:
         """Initialize an instance of a Player base class.
 
         Args:
-            minimum: A port value greater or equal to 1024.
+            name: String containing player's name.
+            phrases: List[str] of what could be printed when player moves.
+            _input: Interface to obtain user's input.
 
         Returns:
-            The new minimum port.
+            None
 
         Raises:
-            ConnectionError: If no available port is found.
+            None
         """
         self.input = _input
         self.symbol = None
         self.phrases = phrases
         self.ID = -1
+        self.n_moves_performed = 0
 
         if name is None:
             self.name = self._generate_random_name()
@@ -167,6 +176,8 @@ class Player:
         # Attempt to place a stone
         try:
             board.apply(column, self.ID, self.name)
+            self.n_moves_performed += 1
+
         except Exception as e:
             print(
                 "Cannot play column",
@@ -177,3 +188,17 @@ class Player:
 
             print(e)
             self.move(board)
+
+    def get_n_moves_performed(self):
+        """How many steps it took for a player.
+
+        Args:
+            None
+
+        Returns:
+            int: number of moves played
+
+        Raises:
+            None
+        """
+        return self.n_moves_performed

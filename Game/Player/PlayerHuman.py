@@ -6,6 +6,20 @@ from ..Board.Board import Board
 
 
 class PlayerHuman(Player):
+    """Implement a human player making moves through console.
+
+    Args:
+        name: string name of a player.
+        phrases: list of strings that player 'says'
+                 at random when making move.
+
+    Attributes:
+        Inherited from Player
+
+    Methods:
+        Inherited from Player
+    """
+
     def __init__(self,
                  name: Optional[str] = None,
                  phrases: Optional[list[str]] = None):

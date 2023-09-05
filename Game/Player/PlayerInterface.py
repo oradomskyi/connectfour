@@ -19,3 +19,17 @@ class PlayerInterface:
             NotImplementedError: If user tries to call an abstract method.
         """
         raise NotImplementedError
+
+    def get_n_moves_performed(self):
+        """How many steps it took for a player.
+
+        Args:
+            None
+
+        Returns:
+            int: number of moves played
+
+        Raises:
+            NotImplementedError: If user tries to call an abstract method.
+        """
+        raise NotImplementedError

@@ -3,7 +3,19 @@ from warnings import warn
 
 
 class Board:
-    """The logic of the "Connect Four" game, and produces output to the console. 
+    """The logic of the "Connect Four" game
+        with output to the console.
+
+        By default there could be up to 42 players. Initializes the board
+        matrix, column height counter and other internal variables.
+
+        Args:
+            width: width of the gaming board, expected to be positive
+                   integer greater than zero.
+            height: height of the gaming board, expected to be positive
+                   integer greater than zero.
+            line_length: line_length of the gaming board, expected to be
+                         a positive integer greater than zero.    
     """
 
     def __init__(self, width: int, height: int, line_length: int):
@@ -13,24 +25,33 @@ class Board:
         matrix, column height counter and other internal variables.
 
         Args:
-            width: width of the gaming board, expected to be positive integer greater than zero
-            height: A port value greater or equal to 1024.
-            line_length: A port value greater or equal to 1024.
+            width: width of the gaming board, expected to be positive
+                   integer greater than zero.
+            height: height of the gaming board, expected to be positive
+                   integer greater than zero.
+            line_length: line_length of the gaming board, expected to be
+                         a positive integer greater than zero.
 
         Returns:
             None
 
         Raises:
-            !!!!!!!!!!!!!!!!!!!!!!!!!ConnectionError: If no available port is found.
+            ValueError: If width is negative.
+            ValueError: If height is negative.
+            ValueError: If line_length is negative, greater than board width
+                        or greater than the board height.
         """
 
         # https://en.wikipedia.org/wiki/Geometric_Shapes_(Unicode_block)
         self.n_symbols = 42
         self.symbols_start = ord("\u25b0")
-        self.symbols = [ chr(self.symbols_start + i) for i in range(0, self.n_symbols) ]
-        
-        print("\n\nBoard says:\nI have", self.n_symbols,"symbols:", self.symbols)
-        
+        self.symbols = [
+            chr(self.symbols_start + i) for i in range(0, self.n_symbols)
+        ]
+
+        print("\n\nBoard says:\nI have", self.n_symbols,
+              "symbols:", self.symbols)
+
         self.i_symbol = 0
         self.empty_symbol = ' '
         self.solved = False
@@ -40,43 +61,53 @@ class Board:
         if 0 < width:
             self.width = width
         else:
-            raise ValueError("I am not sure how play on a Board of width", width)
+            raise ValueError(
+                "I am not sure how play on a Board of width", width)
 
         if 0 < height:
             self.height = height
         else:
-            raise ValueError("I am not sure how play on a Board of height", height)
+            raise ValueError(
+                "I am not sure how play on a Board of height", height)
 
         if 0 < line_length:
             if line_length <= self.width and line_length <= self.height:
                 self.line_length = line_length
             else:
-                raise ValueError("Line is toooo long, it sould be no bigget than board width which is", self.width,", and not", line_length)
-        
+                raise ValueError("Line sould be no longer than board ",
+                                 "width of ", self.width,
+                                 "or height of ", self.height,
+                                 ", and not", line_length)
+        else:
+            raise ValueError(
+                "Line length should be greater than zero and not", line_length)
+
         # Create a matrix for storing state of the game
-        self.board = [[self.empty_symbol for i in range(0, self.width)] for j in range(0, self.height)]
+        self.board = [
+            [
+                self.empty_symbol for i in range(0, self.width)
+            ] for j in range(0, self.height)
+        ]
 
         # Create indexing for the columns
         self.columns_height = [0 for i in range(0, self.width)]
-        
+
     def __str__(self) -> str:
-        """Constructor
-        prepares the list of symbols(colors) that could be used for different players
-        by default there could be up to 42 players. Also initializes the board matrix,
-        column height counter and other internal variables.
+        """Serialize the board matrix.
 
         Args:
-            minimum: A port value greater or equal to 1024.
+            None
 
         Returns:
-            The new minimum port.
+            str: string representation of the board
+                 for printing out to the console
 
         Raises:
-            ConnectionError: If no available port is found.
+            None
         """
 
         text = "\n\n"
-        
+
         # DEC column indices do not fit when there are more than 10 columns
         # HEX when there amore than 16...
         # But I see no clear reason of making the field printout wider
@@ -84,162 +115,188 @@ class Board:
             text += " "
             for i in range(0, self.width):
                 text += "{:01x}".format(i) + " "
-        
+
         text += "\n\n"
         for row in self.board:
             text += "|"
             for cell in row:
                 text += cell+"|"
+
             text += "\n"
 
-        text += "\n"    
+        text += "\n"
+
         return text
 
-    def next_player_id(self) -> int:
-        """Constructor
-        prepares the list of symbols(colors) that could be used for different players
-        by default there could be up to 42 players. Also initializes the board matrix,
-        column height counter and other internal variables.
+    def next_unused_stone(self) -> int:
+        """Get the index of the next unused stone.
 
         Args:
-            minimum: A port value greater or equal to 1024.
+            None
 
         Returns:
-            The new minimum port.
+            int: index of the unused stone.
 
         Raises:
-            ConnectionError: If no available port is found.
+            Exception: If no available unused stones left.
         """
 
         if self.i_symbol == self.n_symbols:
-            raise Exception("Board says: Wow-wow, I do not have capacity for more than",self.n_symbols,"players!")
+            raise Exception(
+                "Board says: Wow-wow, I do not have capacity for more than",
+                self.n_symbols,
+                "players!")
 
         self.i_symbol += 1
         return self.i_symbol-1
 
     def get_symbol(self, i_symbol: int) -> str:
-        """Constructor
-        prepares the list of symbols(colors) that could be used for different players
-        by default there could be up to 42 players. Also initializes the board matrix,
-        column height counter and other internal variables.
+        """Map player ID to the character of the player's stone.
 
         Args:
-            minimum: A port value greater or equal to 1024.
+            i_symbol: player ID, or index of the stone
 
         Returns:
-            The new minimum port.
+            str: string with the stone character
 
         Raises:
-            ConnectionError: If no available port is found.
+            ValueError: If ID is negative or greater than the number of stones.
         """
-        
+
         if i_symbol < 0 or self.n_symbols <= i_symbol:
-            raise ValueError("Player ID, an index, sould be positive integer from 0 to board.n_symbols-1 (max number of players1-1), which is",self.n_symbols-1,", and not", i_symbol)
+            raise ValueError(
+                "Player ID sould be an integer from 0 to ", self.n_symbols-1,
+                ", and not", i_symbol)
 
         return self.symbols[i_symbol]
 
     def get_width(self) -> int:
-        """Constructor
-        prepares the list of symbols(colors) that could be used for different players
-        by default there could be up to 42 players. Also initializes the board matrix,
-        column height counter and other internal variables.
+        """Get the board width.
 
         Args:
-            minimum: A port value greater or equal to 1024.
+            None
 
         Returns:
-            The new minimum port.
+            int: width of the board.
 
         Raises:
-            ConnectionError: If no available port is found.
+            None
         """
         return self.width
-    
-    def _limit_top(self, i: int, j: int, idx: int, jdx: int) -> bool:
-        """Constructor
-        prepares the list of symbols(colors) that could be used for different players
-        by default there could be up to 42 players. Also initializes the board matrix,
-        column height counter and other internal variables.
+
+    def _limit_top(self,
+                   i_stone: int,
+                   j_stone: int,
+                   i_cell: int,
+                   j_cell: int) -> bool:
+        """Test if i_cell is within the board and
+           within the distance of line_length UP from i_stone.
 
         Args:
-            minimum: A port value greater or equal to 1024.
+            i_stone: vertical position of the stone
+            j_stone: horizontal position of the stone
+            i_cell: vertical index if cell to test
+            j_cell: horizontal index if cell to test
 
         Returns:
-            The new minimum port.
+            bool: True when di within the allowed range.
 
         Raises:
-            ConnectionError: If no available port is found.
+            None
         """
-        return (idx < 0) or (idx < i-self.line_length)
+        return (i_cell < 0) or (i_cell < i_stone - self.line_length)
 
-    def _limit_bottom(self, i: int, j: int, idx: int, jdx: int) -> bool:
-        """Constructor
-        prepares the list of symbols(colors) that could be used for different players
-        by default there could be up to 42 players. Also initializes the board matrix,
-        column height counter and other internal variables.
+    def _limit_bottom(self,
+                      i_stone: int,
+                      j_stone: int,
+                      i_cell: int,
+                      j_cell: int) -> bool:
+        """Test if i_cell is within the board and
+           within the distance of line_length DOWN from i_stone.
 
         Args:
-            minimum: A port value greater or equal to 1024.
+            i_stone: vertical position of the stone
+            j_stone: horizontal position of the stone
+            i_cell: vertical index if cell to test
+            j_cell: horizontal index if cell to test
 
         Returns:
-            The new minimum port.
+            bool: True when di within the allowed range.
 
         Raises:
-            ConnectionError: If no available port is found.
+            None
         """
-        return (self.height <= idx) or (i+self.line_length < idx)
+        return (self.height <= i_cell) or (i_stone+self.line_length < i_cell)
 
-    def _limit_left(self, i: int, j: int, idx: int, jdx: int) -> bool:
-        """Constructor
-        prepares the list of symbols(colors) that could be used for different players
-        by default there could be up to 42 players. Also initializes the board matrix,
-        column height counter and other internal variables.
+    def _limit_left(self,
+                    i_stone: int,
+                    j_stone: int,
+                    i_cell: int,
+                    j_cell: int) -> bool:
+        """Test if j_cell is within the board and
+           within the distance of line_length LEFTWARD from j_stone.
 
         Args:
-            minimum: A port value greater or equal to 1024.
+            i_stone: vertical position of the stone
+            j_stone: horizontal position of the stone
+            i_cell: vertical index if cell to test
+            j_cell: horizontal index if cell to test
 
         Returns:
-            The new minimum port.
+            bool: True when j_cell within the allowed range.
 
         Raises:
-            ConnectionError: If no available port is found.
+            None
         """
-        return (jdx < 0) or (jdx < j-self.line_length)
+        return (j_cell < 0) or (j_cell < j_stone - self.line_length)
 
-    def _limit_right(self, i: int, j: int, idx: int, jdx: int) -> bool:
-        """Constructor
-        prepares the list of symbols(colors) that could be used for different players
-        by default there could be up to 42 players. Also initializes the board matrix,
-        column height counter and other internal variables.
+    def _limit_right(self,
+                     i_stone: int,
+                     j_stone: int,
+                     i_cell: int,
+                     j_cell: int) -> bool:
+        """Test if j_cell is within the board and
+           within the distance of line_length RIGHTWARD from j_stone.
 
         Args:
-            minimum: A port value greater or equal to 1024.
+            i_stone: vertical position of the stone
+            j_stone: horizontal position of the stone
+            i_cell: vertical index if cell to test
+            j_cell: horizontal index if cell to test
 
         Returns:
-            The new minimum port.
+            bool: True when j_cell within the allowed range.
 
         Raises:
-            ConnectionError: If no available port is found.
+            None
         """
-        return (self.width <= jdx) or (j+self.line_length < jdx)
+        return (self.width <= j_cell) or (j_stone + self.line_length < j_cell)
 
     def _check(self, column: int) -> bool:
-        """Constructor
-        prepares the list of symbols(colors) that could be used for different players
-        by default there could be up to 42 players. Also initializes the board matrix,
-        column height counter and other internal variables.
+        """Check if player can place a stone in a given column
+           and if it result in winning the game.
+
+           In particular, given index of column where to place the stone
+           first see if column is not full and place the stone if not,
+           and then starting from position [i][j] of where the sone ended up
+           count similar stones verticaly, then horizontaly, on main
+           and secondary diagonals, going not further than the line_length.
+
+           Also not checking any stones right above the current stone,
+           as there is no possibility for any other stones to be - current
+           stone always the topmost.
 
         Args:
-            minimum: A port value greater or equal to 1024.
+            column: index of a column where to put the stone.
 
         Returns:
-            The new minimum port.
+            True if stone is successfully placed.
 
         Raises:
             ConnectionError: If no available port is found.
         """
-        
-        #print(self.empty_cells_left)
+
+        # print(self.empty_cells_left)
         if self.empty_cells_left == 0:
             return False
 
@@ -253,110 +310,117 @@ class Board:
         j = column
         symbol = self.board[i][j]
 
-        '''        
+        '''
         # this may help other player to pay attention, which is not ideal...
         print("Last Move:", i, j, symbol)
         '''
 
-        # We will test vertical, horizontal and two diagonals passing throught the 
-        # cell of the last move for existense of a continuous line of at least self.line_length
+        # We will test vertical, horizontal and
+        # two diagonals passing throught the
+        # cell of the last move for existense
+        # of a continuous line of at least self.line_length
 
-        # -- Check cells Up and Down from current if there is a continuous line 
+        # -- Check cells Up and Down from current if there is a continuous line
         # in the range i={-L, -L+1, .., 0, .., L-1, L} where L=line_length
 
-        # Actually, situation when there are values in the column above the last move
-        # is not possible, so I leave it here for my reference
+        # Actually, situation when there are values
+        # in the column above the last move is not possible,
+        # so I leave it here for my reference
         '''
-        score_up = -1 # not 0 because current cell will be counted 
-        idx = i
-        jdx = j
-        while (not self._limit_top(i, j, idx, jdx)) and (symbol in self.board[idx][jdx]):
+        score_up = -1 # not 0 because current cell will be counted
+        i_cell = i
+        j_cell = j
+        while ((not self._limit_top(i, j, i_cell, j_cell)) and
+               (symbol in self.board[i_cell][j_cell])):
             score_up += 1
-            idx -= 1
+            i_cell -= 1
         '''
         score_up = 0
-        
+
         score_down = -1
-        idx = i
-        jdx = j
-        while (not self._limit_bottom(i, j, idx, jdx)) and (symbol in self.board[idx][jdx]):
+        i_cell = i
+        j_cell = j
+        while ((not self._limit_bottom(i, j, i_cell, j_cell)) and
+               (symbol in self.board[i_cell][j_cell])):
             score_down += 1
-            idx += 1
-        
+            i_cell += 1
+
         score_vertical = score_up + score_down + 1
-        
+
         # -- Now let's do the same horizontaly
-        score_left = -1 # not 0 because current cell will be counted 
-        idx = i
-        jdx = j
-        while (not self._limit_left(i, j, idx, jdx)) and (symbol in self.board[idx][jdx]):
+        score_left = -1  # not 0 because current cell will be counted
+        i_cell = i
+        j_cell = j
+        while ((not self._limit_left(i, j, i_cell, j_cell)) and
+               (symbol in self.board[i_cell][j_cell])):
             score_left += 1
-            jdx -= 1
+            j_cell -= 1
 
         score_right = -1
-        idx = i
-        jdx = j
-        while (not self._limit_right(i, j, idx, jdx)) and (symbol in self.board[idx][jdx]):
+        i_cell = i
+        j_cell = j
+        while ((not self._limit_right(i, j, i_cell, j_cell)) and
+               (symbol in self.board[i_cell][j_cell])):
             score_right += 1
-            jdx += 1
-        
+            j_cell += 1
+
         score_horizontal = score_left + score_right + 1
-        
+
         # -- Main diagonal, from top left to bottom right
-        score_top_left = -1 # not 0 because current cell will be counted 
-        idx = i
-        jdx = j
-        while (not self._limit_top(i, j, idx, jdx)) and \
-              (not self._limit_left(i, j, idx, jdx)) and \
-              (symbol in self.board[idx][jdx]):
+        score_top_left = -1  # not 0 because current cell will be counted
+        i_cell = i
+        j_cell = j
+        while ((not self._limit_top(i, j, i_cell, j_cell)) and
+               (not self._limit_left(i, j, i_cell, j_cell)) and
+               (symbol in self.board[i_cell][j_cell])):
             score_top_left += 1
-            idx -= 1
-            jdx -= 1
-        
+            i_cell -= 1
+            j_cell -= 1
+
         score_bottom_right = -1
-        idx = i
-        jdx = j
-        while (not self._limit_bottom(i, j, idx, jdx)) and \
-              (not self._limit_right(i, j, idx, jdx)) and \
-              (symbol in self.board[idx][jdx]):
+        i_cell = i
+        j_cell = j
+        while ((not self._limit_bottom(i, j, i_cell, j_cell)) and
+               (not self._limit_right(i, j, i_cell, j_cell)) and
+               (symbol in self.board[i_cell][j_cell])):
             score_bottom_right += 1
-            idx += 1
-            jdx += 1
+            i_cell += 1
+            j_cell += 1
 
         score_diagonal_main = score_top_left + score_bottom_right + 1
-        
+
         # -- Secondary diagonal, from top right to botom left
-        score_top_right = -1 # not 0 because current cell will be counted 
-        idx = i
-        jdx = j
-        while (not self._limit_top(i, j, idx, jdx)) and \
-              (not self._limit_right(i, j, idx, jdx)) and \
-              (symbol in self.board[idx][jdx]):
+        score_top_right = -1  # not 0 because current cell will be counted
+        i_cell = i
+        j_cell = j
+        while ((not self._limit_top(i, j, i_cell, j_cell)) and
+               (not self._limit_right(i, j, i_cell, j_cell)) and
+               (symbol in self.board[i_cell][j_cell])):
             score_top_right += 1
-            idx -= 1
-            jdx += 1
-        
+            i_cell -= 1
+            j_cell += 1
+
         score_bottom_left = -1
-        idx = i
-        jdx = j
-        while (not self._limit_bottom(i, j, idx, jdx)) and \
-              (not self._limit_left(i, j, idx, jdx)) and \
-              (symbol in self.board[idx][jdx]):
+        i_cell = i
+        j_cell = j
+        while ((not self._limit_bottom(i, j, i_cell, j_cell)) and
+               (not self._limit_left(i, j, i_cell, j_cell)) and
+               (symbol in self.board[i_cell][j_cell])):
             score_bottom_left += 1
-            idx += 1
-            jdx -= 1
+            i_cell += 1
+            j_cell -= 1
 
         score_diagonal_secondary = score_top_right + score_bottom_left + 1
-    
+
         scores = {
-              "Vertical": score_vertical
-            , "Horizontal": score_horizontal
-            , "Diagonal Main": score_diagonal_main
-            , "Diagonal Secondary": score_diagonal_secondary 
+            "Vertical": score_vertical,
+            "Horizontal": score_horizontal,
+            "Diagonal Main": score_diagonal_main,
+            "Diagonal Secondary": score_diagonal_secondary
         }
-        
+
         '''
-        # this may help other player to pay attention, which is not ideal... 
+        # this may help other player to pay attention, which is not ideal...
         print("Last move score", scores)
         '''
 
@@ -368,69 +432,75 @@ class Board:
         return True
 
     def is_solved(self) -> bool:
-        """Constructor
-        prepares the list of symbols(colors) that could be used for different players
-        by default there could be up to 42 players. Also initializes the board matrix,
-        column height counter and other internal variables.
+        """Get the state of the board.
 
         Args:
-            minimum: A port value greater or equal to 1024.
+            None
 
         Returns:
-            The new minimum port.
+            True when the board is solved.
 
         Raises:
-            ConnectionError: If no available port is found.
+            None
         """
         return self.solved
 
     def _put(self, column: int, i_symbol: int) -> bool:
-        """Constructor
-        prepares the list of symbols(colors) that could be used for different players
-        by default there could be up to 42 players. Also initializes the board matrix,
-        column height counter and other internal variables.
+        """Place a stone on a board.
 
         Args:
-            minimum: A port value greater or equal to 1024.
+            column: int index of column where to put the stone.
+            i_sumbol: int index of stone(color) symbol to place.
 
         Returns:
-            The new minimum port.
+            True when stone is placed, false if column if full.
 
         Raises:
-            ConnectionError: If no available port is found.
+            None
         """
         if self.columns_height[column] == self.height:
             print("Column", column, "is full, better luck next time!")
             return False
         else:
-            self.board[self.height - self.columns_height[column] - 1][column] = self.symbols[i_symbol]
+            i_stone = self.height - self.columns_height[column] - 1
+            self.board[i_stone][column] = self.symbols[i_symbol]
             self.columns_height[column] += 1
             self.empty_cells_left -= 1
             return True
 
     def apply(self, column: int, player_id: int, player_name: str) -> bool:
-        """Constructor
-        prepares the list of symbols(colors) that could be used for different players
-        by default there could be up to 42 players. Also initializes the board matrix,
-        column height counter and other internal variables.
+        """Apply the proposed player's move to the board.
 
         Args:
-            minimum: A port value greater or equal to 1024.
+            column: int index of column where to put the stone.
+            player_id: int index of stone(color) symbol to use.
+            player_name: string to display user name if them won.
 
         Returns:
-            The new minimum port.
+            True when move performed
 
         Raises:
-            ConnectionError: If no available port is found.
+            ValueError: If column is not in range from 0 to board.width-1.
+            ValueError: If player ID negative or greater than the number
+                        of available stones.
         """
 
         if column < 0 or self.width <= column:
-            raise ValueError("Column index has to be from 0 to Board.width-1, which is",self.width-1,", and not", column)
-        
+            raise ValueError(
+                "Column index has to be from 0 to Board.width-1" +
+                " which is", self.width-1,
+                ", and not", column
+            )
+
         if player_id < 0 or self.n_symbols <= player_id:
-            raise ValueError("Player ID, an index, sould be positive integer from 0 to board.n_symbols-1 (max number of players1-1), which is",self.n_symbols-1,", and not", player_id)
-        
-        # Mark the board
+            raise ValueError(
+                "Player ID, an index, sould be positive integer" +
+                "from 0 to board.n_symbols-1 (max number of players1-1)" +
+                ", which is", self.n_symbols-1,
+                ", and not", player_id
+            )
+
+        # Place the stone
         if not self._put(column, player_id):
             return False
         else:
@@ -439,7 +509,6 @@ class Board:
 
         is_playable = self._check(column)
 
-        #print("is_playable", is_playable, "self.is_solved()", self.is_solved())
         if self.is_solved():
             print(player_name + " Won!")
         else:
