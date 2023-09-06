@@ -58,7 +58,6 @@ class Player:
         self.symbol: Optional[str] = None
         self.phrases: Optional[list[str]] = phrases
         self.ID: int = -1
-        self.n_moves_performed: int = 0
 
         if name is None:
             self.name = self._generate_random_name()
@@ -190,7 +189,6 @@ class Player:
         # Attempt to place a stone
         try:
             board.apply(column, self.ID, self.name)
-            self.n_moves_performed += 1
 
         except Exception as e:
             print(
@@ -202,17 +200,3 @@ class Player:
 
             print(e)
             self.move(board)
-
-    def get_n_moves_performed(self):
-        """How many steps it took for a player.
-
-        Args:
-            None
-
-        Returns:
-            int: number of moves played
-
-        Raises:
-            None
-        """
-        return self.n_moves_performed
