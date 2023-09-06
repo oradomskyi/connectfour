@@ -30,4 +30,5 @@ Known issues:
 - Unit test coverage is incomplete, not all of the edge cases are tested.
 - Runtime checks are incomplete, not all of the parameters are tested for correct values.
 - Documentation is incomplete as it lacks flow and state diagrams.
+- Stone symbols are not displayed correctly in Windows CMD.
 - Spelling and typos in comments.
