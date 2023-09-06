@@ -36,20 +36,10 @@ board_line_length = 4
 # list of Player istances
 board_players = [
     PlayerHuman(
-        name="Fede",
+        name="Federico",
         phrases=[' ', 'Well-well...', 'Ha!', 'Ough.']
     ),
-    PlayerHuman(
-        name="Ale",
-        phrases=[
-            ' ',
-            'Weeee!',
-            'A-ha-ha!',
-            '*sneezing*',
-            '*scratches the head*',
-            '*crying in Korean*',
-        ]
-    )
+    PlayerAlgoRandom(n_moves=board_width, name='Ultimate AI')
 ]
 
 # add some more "computer" players - algo that makes random moves
