@@ -19,4 +19,3 @@ class PlayerInterface:
             NotImplementedError: If user tries to call an abstract method.
         """
         raise NotImplementedError
-
