@@ -6,6 +6,7 @@ from string import ascii_lowercase
 from ..Board.Board import Board
 from ..Input.Input import Input
 
+
 class Player:
     """Implement functions common for PlayerHuman and PlayerAlgoRandom.
 
@@ -24,13 +25,16 @@ class Player:
         n_moves_performed: integer number of steps taken during the game.
 
     Methods:
-        move(board): To set a stone on a board.
         __str__(): To serialize the class for printing outputs to the console.
-        generate_random_name(): generator of a random name.
+        _generate_random_name(): generator of a random name.
+
         set_ID(id: int): Set player ID.
         get_ID(): Get player ID.
         set_name(name: str): Set player name.
         get_name(): Get player name.
+        get_n_moves_performed(): Get the number of move player performed.
+
+        move(board): To set a stone on a board.
     """
 
     def __init__(self,
@@ -50,7 +54,7 @@ class Player:
         Raises:
             None
         """
-        self.input = _input
+        self.input: Optional[Input] = _input
         self.symbol: Optional[str] = None
         self.phrases: Optional[list[str]] = phrases
         self.ID: int = -1
@@ -171,6 +175,16 @@ class Player:
             None
         """
         # Attempt to get player input
+        if self.input is None:
+            raise ValueError("self.input is None")
+
+        # Does not allow to unittest but Mock() the input()
+        # if not issubclass(type(self.input), Input):
+        #     raise TypeError(
+        #         "self.input has be of type Input, and not",
+        #         type(self.input)
+        #     )
+
         column: int = self.input.get_int()
 
         # Attempt to place a stone

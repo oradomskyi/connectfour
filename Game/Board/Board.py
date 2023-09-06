@@ -15,11 +15,11 @@ class Board:
             height: height of the gaming board, expected to be positive
                    integer greater than zero.
             line_length: line_length of the gaming board, expected to be
-                         a positive integer greater than zero.    
+                         a positive integer greater than zero.
     """
 
     def __init__(self, width: int, height: int, line_length: int):
-        """Prepares the list of symbols(colors) that could be used for players.
+        """Prepares the list of SYMBOLS(colors) that could be used for players.
 
         By default there could be up to 42 players. Initializes the board
         matrix, column height counter and other internal variables.
@@ -43,17 +43,17 @@ class Board:
         """
 
         # https://en.wikipedia.org/wiki/Geometric_Shapes_(Unicode_block)
-        self.n_symbols: int = 42
-        self.symbols_start: int = ord("\u25b0")
-        self.symbols: list[str] = [
-            chr(self.symbols_start + i) for i in range(0, self.n_symbols)
+        self.N_SYMBOLS: int = 42
+        self.SYMBOLS_START: int = ord("\u25b0")
+        self.SYMBOLS: list[str] = [
+            chr(self.SYMBOLS_START + i) for i in range(0, self.N_SYMBOLS)
         ]
 
-        print("\n\nBoard says:\nI have", self.n_symbols,
-              "symbols:", self.symbols)
+        print("\n\nBoard says:\nI have", self.N_SYMBOLS,
+              "stones:", self.SYMBOLS)
 
         self.i_symbol: int = 0
-        self.empty_symbol: str = ' '
+        self.EMPTY_SYMBOL: str = ' '
         self.solved: bool = False
         self.empty_cells_left: int = width*height
         self.player_moves: list[int] = []  # this would keep moves - their IDs
@@ -86,7 +86,7 @@ class Board:
         # Create a matrix for storing state of the game
         self.board: list[list[str]] = [
             [
-                self.empty_symbol for i in range(0, self.width)
+                self.EMPTY_SYMBOL for i in range(0, self.width)
             ] for j in range(0, self.height)
         ]
 
@@ -142,10 +142,10 @@ class Board:
             Exception: If no available unused stones left.
         """
 
-        if self.i_symbol == self.n_symbols:
+        if self.i_symbol == self.N_SYMBOLS:
             raise Exception(
                 "Board says: Wow-wow, I do not have capacity for more than",
-                self.n_symbols,
+                self.N_SYMBOLS,
                 "players!")
 
         self.i_symbol += 1
@@ -164,12 +164,12 @@ class Board:
             ValueError: If ID is negative or greater than the number of stones.
         """
 
-        if i_symbol < 0 or self.n_symbols <= i_symbol:
+        if i_symbol < 0 or self.N_SYMBOLS <= i_symbol:
             raise ValueError(
-                "Player ID sould be an integer from 0 to ", self.n_symbols-1,
+                "Player ID sould be an integer from 0 to ", self.N_SYMBOLS-1,
                 ", and not", i_symbol)
 
-        return self.symbols[i_symbol]
+        return self.SYMBOLS[i_symbol]
 
     def get_width(self) -> int:
         """Get the board width.
@@ -478,7 +478,7 @@ class Board:
             return False
         else:
             i_stone = self.height - self.columns_height[column] - 1
-            self.board[i_stone][column] = self.symbols[i_symbol]
+            self.board[i_stone][column] = self.SYMBOLS[i_symbol]
             self.columns_height[column] += 1
             self.empty_cells_left -= 1
             return True
@@ -507,11 +507,11 @@ class Board:
                 ", and not", column
             )
 
-        if player_id < 0 or self.n_symbols <= player_id:
+        if player_id < 0 or self.N_SYMBOLS <= player_id:
             raise ValueError(
                 "Player ID, an index, sould be positive integer" +
-                "from 0 to board.n_symbols-1 (max number of players1-1)" +
-                ", which is", self.n_symbols-1,
+                "from 0 to board.n_SYMBOLS-1 (max number of players1-1)" +
+                ", which is", self.N_SYMBOLS-1,
                 ", and not", player_id
             )
 
