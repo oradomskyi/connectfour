@@ -178,7 +178,7 @@ class Player:
         if self.input is None:
             raise ValueError("self.input is None")
 
-        # Does not allow to unittest but Mock() the input()
+        # This does not allow to unittest via Mock() the input()
         # if not issubclass(type(self.input), Input):
         #     raise TypeError(
         #         "self.input has be of type Input, and not",
