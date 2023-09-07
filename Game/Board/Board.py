@@ -294,7 +294,7 @@ class Board:
             True if stone is successfully placed.
 
         Raises:
-            ConnectionError: If no available port is found.
+            None
         """
 
         # print(self.empty_cells_left)

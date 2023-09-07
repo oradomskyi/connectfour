@@ -66,41 +66,13 @@ class TestGame(unittest.TestCase):
         with self.assertRaises(AttributeError):
             Game(settings_without_players)
 
-    def test_game_async_mode(self):
-        settings = self.settings.copy()
-        board_width = 14
-        settings["boring"] = False
-        settings["board"]["width"] = board_width
-        settings["players"] = [
-            PlayerAlgoRandom(n_moves=board_width, max_sleep=0) for i in range(0, 4)
-        ]
-
-        game = Game(settings)
-        game.play()
-
-        while 0 < game.board.empty_cells_left and not game.board.is_solved():
-            sleep(1)
-
-        player_moves: list[int] = game.board.get_player_moves()
-        two_consecutive_moves = False
-        last_id = -1
-        for _id in player_moves:
-            if last_id == _id:
-                two_consecutive_moves = True
-                break
-
-            last_id = _id
-
-        print("player_moves", player_moves)
-        self.assertTrue(two_consecutive_moves)
-
     def test_game_sync_mode(self):
         settings = self.settings.copy()
         board_width = 14
         settings["boring"] = True
         settings["board"]["width"] = board_width
         settings["players"] = [
-            PlayerAlgoRandom(n_moves=board_width, max_sleep=0) for i in range(0, 4)
+            PlayerAlgoRandom(n_moves=board_width, max_sleep=1) for i in range(0, 4)
         ]
 
         game = Game(settings)
@@ -118,8 +90,36 @@ class TestGame(unittest.TestCase):
 
             last_id = _id
 
-        print("player_moves", player_moves)
+        print("SYNC player_moves", player_moves)
         self.assertFalse(two_consecutive_moves)
+
+    def test_game_async_mode(self):
+        settings = self.settings.copy()
+        board_width = 14
+        settings["boring"] = False
+        settings["board"]["width"] = board_width
+        settings["players"] = [
+            PlayerAlgoRandom(n_moves=board_width, max_sleep=1) for i in range(0, 4)
+        ]
+
+        game = Game(settings)
+        game.play()
+
+        while 0 < game.board.empty_cells_left and not game.board.is_solved():
+            sleep(1)
+
+        player_moves: list[int] = game.board.get_player_moves()
+        two_consecutive_moves = False
+        last_id = -1
+        for _id in player_moves:
+            if last_id == _id:
+                two_consecutive_moves = True
+                break
+
+            last_id = _id
+
+        print("ASYNC player_moves", player_moves)
+        self.assertTrue(two_consecutive_moves)
 
     def test_large_board_initialization(self):
         large_board_settings = {
